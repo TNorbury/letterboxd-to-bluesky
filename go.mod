@@ -5,13 +5,14 @@ go 1.24.0
 toolchain go1.24.1
 
 require (
+	github.com/TNorbury/go-bluesky v0.0.0-20251129082033-7f8cb62087da
 	github.com/bluesky-social/indigo v0.0.0-20230504025040-8915cccc3319
 	github.com/gocolly/colly v1.2.0
+	github.com/joho/godotenv v1.5.1
 )
 
 require (
 	github.com/PuerkitoBio/goquery v1.11.0 // indirect
-	github.com/TNorbury/go-bluesky v0.0.0-20251129082033-7f8cb62087da // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/antchfx/htmlquery v1.3.5 // indirect
 	github.com/antchfx/xmlquery v1.5.0 // indirect
@@ -39,7 +40,6 @@ require (
 	github.com/ipfs/go-log/v2 v2.5.1 // indirect
 	github.com/ipfs/go-metrics-interface v0.0.1 // indirect
 	github.com/jbenet/goprocess v0.1.4 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
