@@ -16,7 +16,7 @@ func main() {
 		panic(fmt.Sprintf("Error loading .env file. %e", err))
 	}
 
-	entries := letterboxd.ScrapeLetterboxDiary()
+	entries := letterboxd.ScrapeLetterboxDiary(1)
 	entry := entries[0]
 
 	client := bluesky.ConnectToBluesky()

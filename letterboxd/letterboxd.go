@@ -16,12 +16,17 @@ type DiaryEntry struct {
 	Rating string
 }
 
-func ScrapeLetterboxDiary() []DiaryEntry {
+func ScrapeLetterboxDiary(maxEntries int) []DiaryEntry {
 	diaryPageCollector := colly.NewCollector()
 
 	var entries []DiaryEntry
 
+	doneReadingEntries := false
+
 	diaryPageCollector.OnHTML(".diary-entry-row", func(e *colly.HTMLElement) {
+		if doneReadingEntries {
+			return
+		}
 		entry := DiaryEntry{}
 
 		entry.Name = e.ChildText(".name")
@@ -35,6 +40,10 @@ func ScrapeLetterboxDiary() []DiaryEntry {
 		}
 
 		entries = append(entries, entry)
+
+		if maxEntries > 0 && len(entries) >= maxEntries {
+			doneReadingEntries = true
+		}
 
 	})
 
