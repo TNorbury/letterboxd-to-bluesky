@@ -19,21 +19,21 @@ func main() {
 	}
 
 	db := database.InitDb()
-		entries := letterboxd.ScrapeLetterboxDiary(0, db)
+	entries := letterboxd.ScrapeLetterboxDiary(0, db)
 
-		if len(entries) >= 1 {
-	client := bluesky.ConnectToBluesky()
+	if len(entries) >= 1 {
+		client := bluesky.ConnectToBluesky()
 
-	for i, entry := range entries {
-				postErr := bluesky.PostEntry(client, entry, db)
-		if postErr != nil {
-			panic(postErr)
-		}
+		for i, entry := range entries {
+			postErr := bluesky.PostEntry(client, entry, db)
+			if postErr != nil {
+				panic(postErr)
+			}
 
-		// wait 1/2 sec before making next post
-		if i < len(entries)-1 {
-			time.Sleep(500 * time.Millisecond)
-				}
+			// wait 1/2 sec before making next post
+			if i < len(entries)-1 {
+				time.Sleep(500 * time.Millisecond)
+			}
 		}
 	}
 
