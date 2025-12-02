@@ -60,7 +60,7 @@ func PostEntry(client *bluesky.Client, entry letterboxd.DiaryEntry) error {
 			panic(fmt.Errorf("unable to post, %e", err))
 		}
 
-		fmt.Printf("Posted: %v, %v", out.Cid, out.Uri)
+		fmt.Printf("Posted: %s -- %v, %v", entry.Name, out.Cid, out.Uri)
 
 		return err
 	})
