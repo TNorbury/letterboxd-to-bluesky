@@ -4,22 +4,17 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
+	"tnorbury/letterboxd-bluesky/database"
+	"tnorbury/letterboxd-bluesky/models"
 
 	"github.com/gocolly/colly"
 )
 
-// Unique diary entry
-// TODO: add date...
-type DiaryEntry struct {
-	Name   string
-	Url    string
-	Rating string
-}
-
-func ScrapeLetterboxDiary(maxEntries int) []DiaryEntry {
+func ScrapeLetterboxDiary(maxEntries int, db *database.Db) []models.DiaryEntry {
 	diaryPageCollector := colly.NewCollector()
 
-	var entries []DiaryEntry
+	var entries []models.DiaryEntry
 
 	doneReadingEntries := false
 
@@ -27,7 +22,7 @@ func ScrapeLetterboxDiary(maxEntries int) []DiaryEntry {
 		if doneReadingEntries {
 			return
 		}
-		entry := DiaryEntry{}
+		entry := models.DiaryEntry{}
 
 		entry.Name = e.ChildText(".name")
 
@@ -54,9 +49,11 @@ func ScrapeLetterboxDiary(maxEntries int) []DiaryEntry {
 	}
 
 	fmt.Printf("%d entries\n", len(entries))
+	// time.Parse(time.DateOnly, "")
+	foundMatchingEntry := false
+	matchingEntryIdx := -1
 
 	for i, entry := range entries {
-
 		entryPageCollector := colly.NewCollector()
 
 		entryPageCollector.OnHTML(".js-review-body", func(e *colly.HTMLElement) {
@@ -67,12 +64,59 @@ func ScrapeLetterboxDiary(maxEntries int) []DiaryEntry {
 			entries[i] = entry
 		})
 
+		entryPageCollector.OnHTML("meta", func(e *colly.HTMLElement) {
+			date := e.Attr("content")
+			if date == "" {
+				return
+			}
+
+			tt, err := time.Parse(time.DateOnly, date)
+			if err != nil {
+				return
+			}
+
+			entry.Date = tt
+			entries[i] = entry
+		})
+
 		entryPageCollector.Visit(fmt.Sprintf("https://letterboxd.com/%s", entry.Url))
+
+		// check to see if this entry is already logged
+		if db.HasMatchingEntry(entries[i]) {
+			foundMatchingEntry = true
+			matchingEntryIdx = i
+			break
+		}
+	}
+
+	if foundMatchingEntry {
+		if matchingEntryIdx == 0 {
+			entries = []models.DiaryEntry{}
+		} else {
+			entries = entries[0 : matchingEntryIdx-1]
+		}
 	}
 
 	for _, entry := range entries {
 		fmt.Printf("I give %s a %s\n", entry.Name, entry.Rating)
 	}
 
-	return entries
+	var entriesToReturn []models.DiaryEntry
+
+	noEntriesBeforeStr := os.Getenv("NO_ENTRIES_BEFORE")
+	if noEntriesBeforeStr != "" {
+		noEntriesBefore, _ := time.Parse(time.DateOnly, noEntriesBeforeStr)
+
+		for _, entry := range entries {
+
+			if entry.Date.After(noEntriesBefore) {
+				entriesToReturn = append(entriesToReturn, entry)
+			}
+		}
+
+	} else {
+		entriesToReturn = entries
+	}
+
+	return entriesToReturn
 }

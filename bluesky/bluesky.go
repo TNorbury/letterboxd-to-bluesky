@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"os"
 	"time"
-	"tnorbury/letterboxd-bluesky/letterboxd"
+	"tnorbury/letterboxd-bluesky/database"
+	"tnorbury/letterboxd-bluesky/models"
 
 	"github.com/bluesky-social/indigo/api/atproto"
 	"github.com/bluesky-social/indigo/api/bsky"
@@ -41,7 +42,7 @@ func ConnectToBluesky() *bluesky.Client {
 	return client
 }
 
-func PostEntry(client *bluesky.Client, entry letterboxd.DiaryEntry) error {
+func PostEntry(client *bluesky.Client, entry models.DiaryEntry, db *database.Db) error {
 	return client.CustomCall(func(api *xrpc.Client) error {
 
 		post := bsky.FeedPost{}
@@ -59,6 +60,8 @@ func PostEntry(client *bluesky.Client, entry letterboxd.DiaryEntry) error {
 		if err != nil {
 			panic(fmt.Errorf("unable to post, %e", err))
 		}
+
+		db.AddEntry(entry)
 
 		fmt.Printf("Posted: %s -- %v, %v", entry.Name, out.Cid, out.Uri)
 
