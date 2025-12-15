@@ -83,6 +83,8 @@ func ScrapeLetterboxDiary(maxEntries int, db *database.Db) []models.DiaryEntry {
 
 		// check to see if this entry is already logged
 		if db.HasMatchingEntry(entries[i]) {
+			name := entries[1].Name
+			fmt.Printf("Matching Entry: %s", name)
 			foundMatchingEntry = true
 			matchingEntryIdx = i
 			break
@@ -93,7 +95,7 @@ func ScrapeLetterboxDiary(maxEntries int, db *database.Db) []models.DiaryEntry {
 		if matchingEntryIdx == 0 {
 			entries = []models.DiaryEntry{}
 		} else {
-			entries = entries[0 : matchingEntryIdx-1]
+			entries = entries[0:matchingEntryIdx]
 		}
 	}
 
