@@ -63,7 +63,7 @@ func PostEntry(client *bluesky.Client, entry models.DiaryEntry, db *database.Db)
 
 		db.AddEntry(entry)
 
-		fmt.Printf("Posted: %s -- %v, %v", entry.Name, out.Cid, out.Uri)
+		fmt.Printf("Posted: %s -- %v, %v\n", entry.Name, out.Cid, out.Uri)
 
 		return err
 	})
