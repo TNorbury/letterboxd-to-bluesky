@@ -87,7 +87,7 @@ func ScrapeLetterboxDiary(maxEntries int, db *database.Db) []models.DiaryEntry {
 		// check to see if this entry is already logged
 		if db.HasMatchingEntry(entries[i]) {
 			name := entries[1].Name
-			fmt.Printf("Matching Entry: %s", name)
+			fmt.Printf("Matching Entry: %s\n", name)
 			foundMatchingEntry = true
 			matchingEntryIdx = i
 			break
