@@ -24,7 +24,10 @@ func ScrapeLetterboxDiary(maxEntries int, db *database.Db) []models.DiaryEntry {
 		}
 		entry := models.DiaryEntry{}
 
-		entry.Name = e.ChildText(".name")
+		name := e.ChildText(".name")
+		year := e.ChildText(".col-releaseyear")
+
+		entry.Name = fmt.Sprintf("%s (%s)", name, year)
 
 		urls := e.ChildAttrs("a", "href")
 		for _, u := range urls {
