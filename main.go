@@ -24,7 +24,9 @@ func main() {
 	if len(entries) >= 1 {
 		client := bluesky.ConnectToBluesky()
 
-		for i, entry := range entries {
+		for i := len(entries) - 1; i >= 0; i = i - 1 {
+			entry := entries[i]
+
 			postErr := bluesky.PostEntry(client, entry, db)
 			if postErr != nil {
 				panic(postErr)
