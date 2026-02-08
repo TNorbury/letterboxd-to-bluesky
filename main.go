@@ -19,22 +19,33 @@ func main() {
 	}
 
 	db := database.InitDb()
-	entries := letterboxd.ScrapeLetterboxDiary(0, db)
 
-	if len(entries) >= 1 {
-		client := bluesky.ConnectToBluesky()
+	ticker := time.NewTicker(1 * time.Hour)
+	defer ticker.Stop()
 
-		for i := len(entries) - 1; i >= 0; i = i - 1 {
-			entry := entries[i]
+	for t := range ticker.C {
+		fmt.Printf("Load Letterbox @ %v\n", t)
+		entries, err := letterboxd.ScrapeLetterboxDiary(0, db)
+		if err != nil {
+			fmt.Printf("Error scrapping letterbox: %e\n", err)
+			continue
+		}
 
-			postErr := bluesky.PostEntry(client, entry, db)
-			if postErr != nil {
-				panic(postErr)
-			}
+		if len(entries) >= 1 {
+			client := bluesky.ConnectToBluesky()
 
-			// wait 1/2 sec before making next post
-			if i < len(entries)-1 {
-				time.Sleep(500 * time.Millisecond)
+			for i := len(entries) - 1; i >= 0; i = i - 1 {
+				entry := entries[i]
+
+				postErr := bluesky.PostEntry(client, entry, db)
+				if postErr != nil {
+					panic(postErr)
+				}
+
+				// wait 1/2 sec before making next post
+				if i < len(entries)-1 {
+					time.Sleep(500 * time.Millisecond)
+				}
 			}
 		}
 	}

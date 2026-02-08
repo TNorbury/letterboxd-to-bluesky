@@ -11,7 +11,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func ScrapeLetterboxDiary(maxEntries int, db *database.Db) []models.DiaryEntry {
+func ScrapeLetterboxDiary(maxEntries int, db *database.Db) ([]models.DiaryEntry, error) {
 	diaryPageCollector := colly.NewCollector()
 
 	var entries []models.DiaryEntry
@@ -48,7 +48,7 @@ func ScrapeLetterboxDiary(maxEntries int, db *database.Db) []models.DiaryEntry {
 	letterboxdUser := os.Getenv("LETTERBOXD_USERNAME")
 	err := diaryPageCollector.Visit(fmt.Sprintf("https://letterboxd.com/%s/diary/", letterboxdUser))
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	fmt.Printf("%d entries\n", len(entries))
@@ -123,5 +123,5 @@ func ScrapeLetterboxDiary(maxEntries int, db *database.Db) []models.DiaryEntry {
 		entriesToReturn = entries
 	}
 
-	return entriesToReturn
+	return entriesToReturn, nil
 }
