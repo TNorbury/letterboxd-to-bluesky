@@ -33,8 +33,12 @@ func ScrapeLetterboxDiary(maxEntries int, db *database.Db) ([]models.DiaryEntry,
 		}
 		entry := models.DiaryEntry{}
 
-		name := e.ChildText(".name")
+		name := e.ChildText(".primaryname")
 		year := e.ChildText(".col-releaseyear")
+
+		if name == "" {
+			panic("Blank name")
+		}
 
 		entry.Name = fmt.Sprintf("%s (%s)", name, year)
 
